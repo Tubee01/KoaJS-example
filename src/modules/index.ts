@@ -1,16 +1,16 @@
 import Application, { Context, Next } from "koa";
 import Router from "@koa/router";
 import { TicketController } from "./ticket/ticket.controller";
-import { AdminController } from "./user/admin.controller";
+import { UserController } from "./user/user.controller";
 import { GroupController } from "./group/group.controller";
 
 export class RouterModule {
   private readonly router: Router = new Router();
   constructor(private readonly app: Application) { }
 
-  get routes() {
+  get controllers() {
     const { logger } = this.app.context;
-    const routes = [TicketController, AdminController, GroupController]
+    const routes = [TicketController, UserController, GroupController]
 
     for (const route of routes) {
       logger.verbose(`[${this.constructor.name}]: ${route.name} loaded`);
@@ -20,7 +20,7 @@ export class RouterModule {
   }
 
   public init() {
-    this.routes.forEach((controller: any) => {
+    this.controllers.map((controller: any, i: number) => {
       const { logger } = this.app.context;
       const { routes } = controller.prototype;
 
@@ -30,25 +30,26 @@ export class RouterModule {
         logger.verbose(`[${this.constructor.name}]: ${method} ${path}`);
         switch (method) {
           case 'GET':
-            this.router.get(path, async (ctx: Context, next: Next) => handler(ctx, next));
+            this.router.get(path, async (ctx: Context, next: Next) => new controller(this.app)[handler.name](ctx, next));
             break;
           case 'POST':
-            this.router.post(path, async (ctx: Context, next: Next) => handler(ctx, next));
+            this.router.post(path, async (ctx: Context, next: Next) => new controller(this.app)[handler.name](ctx, next));
             break;
           case 'PUT':
-            this.router.put(path, async (ctx: Context, next: Next) => handler(ctx, next));
+            this.router.put(path, async (ctx: Context, next: Next) => new controller(this.app)[handler.name](ctx, next));
             break;
           case 'DELETE':
-            this.router.delete(path, async (ctx: Context, next: Next) => handler(ctx, next));
+            this.router.delete(path, async (ctx: Context, next: Next) => new controller(this.app)[handler.name](ctx, next));
             break;
           case 'PATCH':
-            this.router.patch(path, async (ctx: Context, next: Next) => handler(ctx, next));
+            this.router.patch(path, async (ctx: Context, next: Next) => new controller(this.app)[handler.name](ctx, next));
             break;
           default:
             throw new Error(`Method ${method} not supported`);
         }
       })
     });
+
     this.app.use(this.router.routes());
     this.app.use(this.router.allowedMethods());
   }

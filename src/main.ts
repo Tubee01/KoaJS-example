@@ -12,7 +12,7 @@ import { RouterModule } from './modules';
 
 declare module 'koa' {
   interface BaseContext {
-    db: PrismaClient;
+    db: PrismaService;
   }
 }
 
