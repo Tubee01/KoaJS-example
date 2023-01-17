@@ -1,0 +1,134 @@
+openapi: "3.0.3"
+info:
+  title: "My API"
+  version: "1.0.0"
+paths:
+  /user:
+    get:
+      tags:
+        - User
+      summary: "Get user"
+      operationId: "findAllUser"
+      responses:
+        200:
+          description: "User"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User" # Path: openapi.yml
+    post:
+      tags:
+        - User
+      summary: "Create user"
+      operationId: "createUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: "User"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /group:
+    get:
+      tags:
+        - Group
+      summary: "Get group"
+      operationId: "findAllGroup"
+      responses:
+        200:
+          description: "Group"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+    post:
+      tags:
+        - Group
+      summary: "Create group"
+      operationId: "createGroup"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+      responses:
+        200:
+          description: "Group"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+  /group/{id}:
+    put:
+      tags:
+        - Group
+      summary: "Update group"
+      operationId: "updateGroup"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+      responses:
+        200:
+          description: "Group"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+    delete:
+      tags:
+        - Group
+      summary: "Delete group"
+      operationId: "deleteGroup"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+      responses:
+        200:
+          description: "Group"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+
+components:
+  schemas:
+    User:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        email:
+          type: "string"
+          format: "email"
+        password:
+          type: "string"
+          format: "password"
+    Group:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+          optional: true

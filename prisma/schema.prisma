@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  roomSessions RoomSession[]
+}
+
+model Room {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  tickets Ticket[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  roomSessions RoomSession[]
+}
+
+model Ticket {
+  id      Int          @id @default(autoincrement())
+  title   String
+  content String
+  status  TicketStatus @default(OPEN)
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id])
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ticketGroups TicketGroup[]
+}
+
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ticketGroups TicketGroup[]
+}
+
+model TicketGroup {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticketId Int
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  groupId  Int
+  group    Group  @relation(fields: [groupId], references: [id])
+}
+
+model RoomSession {
+  id      Int    @id @default(autoincrement())
+  comment String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
